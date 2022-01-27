@@ -804,5 +804,47 @@ module DefiningClasses =
 
     printfn $"Length of vector1: %f{vector1.Length}\nLength of vector2: %f{vector2.Length}"
 
+module DefiningGenericClasses = 
+
+    type StateTracker<'T>(initialElement: 'T) = 
+
+        /// This internal field store the states in a list.
+        let mutable states = [ initialElement ]
+
+        /// Add a new element to the list of states.
+        member this.UpdateState newState = 
+            states <- newState :: states  // use the '<-' operator to mutate the value.
+
+        /// Get the entire list of historical states.
+        member this.History = states
+
+        /// Get the latest state.
+        member this.Current = states.Head
+
+    /// An 'int' instance of the state tracker class. Note that the type parameter is inferred.
+    let tracker = StateTracker 10
+
+    // Add a state
+    tracker.UpdateState 17        
+   
+module ImplementingInterfaces =
+
+    /// This is a type that implements IDisposable.
+    type ReadFile() =
+
+        let file = new System.IO.StreamReader("readme.txt")
+
+        member this.ReadLine() = file.ReadLine()
+
+        // This is the implementation of IDisposable members.
+        interface System.IDisposable with
+            member this.Dispose() = file.Close()
+
+
+    /// This is an object that implements IDisposable via an Object Expression
+    /// Unlike other languages such as C# or Java, a new type definition is not needed 
+    /// to implement an interface.
+    let interfaceImplementation =
+        { new System.IDisposable with
+            member this.Dispose() = printfn "disposed" }
         
-    
