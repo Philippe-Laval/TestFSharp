@@ -705,3 +705,104 @@ module PatternMatching =
     let parseInt = parseHelper Int32.TryParse
     let parseDouble = parseHelper Double.TryParse
     let parseTimeSpan = parseHelper TimeSpan.TryParse
+    
+    
+    let (|Int|_|) = parseInt
+    let (|Double|_|) = parseDouble
+    let (|Date|_|) = parseDateTimeOffset
+    let (|TimeSpan|_|) = parseTimeSpan
+
+    /// Pattern Matching via 'function' keyword and Active Patterns often looks like this.
+    let printParseResult = function
+        | Int x -> printfn $"%d{x}"
+        | Double x -> printfn $"%f{x}"
+        | Date d -> printfn $"%O{d}"
+        | TimeSpan t -> printfn $"%O{t}"
+        | _ -> printfn "Nothing was parse-able!"
+
+    // Call the printer with some different values to parse.
+    printParseResult "12"
+    printParseResult "12.045"
+    printParseResult "12/28/2016"
+    printParseResult "9:01PM"
+    printParseResult "banana!"
+    
+module OptionValues = 
+
+    /// First, define a zip code defined via Single-case Discriminated Union.
+    type ZipCode = ZipCode of string
+
+    /// Next, define a type where the ZipCode is optional.
+    type Customer = { ZipCode: ZipCode option }
+
+    /// Next, define an interface type that represents an object to compute the shipping zone for the customer's zip code, 
+    /// given implementations for the 'getState' and 'getShippingZone' abstract methods.
+    type IShippingCalculator =
+        abstract GetState : ZipCode -> string option
+        abstract GetShippingZone : string -> int
+
+    /// Next, calculate a shipping zone for a customer using a calculator instance.
+    /// This uses combinators in the Option module to allow a functional pipeline for
+    /// transforming data with Optionals.
+    let CustomerShippingZone (calculator: IShippingCalculator, customer: Customer) =
+        customer.ZipCode 
+        |> Option.bind calculator.GetState 
+        |> Option.map calculator.GetShippingZone
+        
+
+module UnitsOfMeasure = 
+
+    // First, open a collection of common unit names
+    open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+
+    /// Define a unitized constant
+    let sampleValue1 = 1600.0<meter>          
+
+    /// Next, define a new unit type
+    [<Measure>]
+    type mile =
+        /// Conversion factor mile to meter.
+        static member asMeter = 1609.34<meter/mile>
+
+    /// Define a unitized constant
+    let sampleValue2  = 500.0<mile>          
+
+    /// Compute  metric-system constant
+    let sampleValue3 = sampleValue2 * mile.asMeter   
+
+    // Values using Units of Measure can be used just like the primitive numeric type for things like printing.
+    printfn $"After a %f{sampleValue1} race I would walk %f{sampleValue2} miles which would be %f{sampleValue3} meters"    
+
+module DefiningClasses = 
+
+    /// A simple two-dimensional Vector class.
+    ///
+    /// The class's constructor is on the first line,
+    /// and takes two arguments: dx and dy, both of type 'double'.
+    type Vector2D(dx : double, dy : double) =
+
+        /// This internal field stores the length of the vector, computed when the 
+        /// object is constructed
+        let length = sqrt (dx*dx + dy*dy)
+
+        // 'this' specifies a name for the object's self-identifier.
+        // In instance methods, it must appear before the member name.
+        member this.DX = dx
+
+        member this.DY = dy
+
+        member this.Length = length
+
+        /// This member is a method.  The previous members were properties.
+        member this.Scale(k) = Vector2D(k * this.DX, k * this.DY)
+    
+    /// This is how you instantiate the Vector2D class.
+    let vector1 = Vector2D(3.0, 4.0)
+
+    /// Get a new scaled vector object, without modifying the original object.
+    let vector2 = vector1.Scale(10.0)
+
+    printfn $"Length of vector1: %f{vector1.Length}\nLength of vector2: %f{vector2.Length}"
+
+        
+    
