@@ -868,4 +868,4 @@ significant benefit. Classes are also the preferred data type when interoperatin
 as these languages use classes for nearly everything.
 *)
 
-TestFSharp.Test.CoolPrint "Phil"
+TestFSharp.TestFunction.CoolPrint "Phil"
