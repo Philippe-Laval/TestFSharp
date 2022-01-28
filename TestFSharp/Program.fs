@@ -2,6 +2,8 @@
 // https://fsharp.org/learn/
 // https://fsharpforfunandprofit.com/
 
+// How to find F# jobs
+//https://gist.github.com/swlaschin/6459789afd1b5e7a2c9f6a531c37b1ec
 
 // What is F#
 // https://docs.microsoft.com/en-us/dotnet/fsharp/what-is-fsharp
