@@ -867,3 +867,5 @@ is conceptually tied to some data, using Classes and the principles of Object-Or
 significant benefit. Classes are also the preferred data type when interoperating with C# and Visual Basic,
 as these languages use classes for nearly everything.
 *)
+
+TestFSharp.Test.CoolPrint "Phil"
